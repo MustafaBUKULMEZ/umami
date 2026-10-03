@@ -57,3 +57,9 @@ yarn-error.log*
 
 # api integration test runtime state
 /tests/api/.runtime
+.temp_files/
+
+.wrongstack/
+!/.wrongstack/
+/.wrongstack/*
+!/.wrongstack/project.json

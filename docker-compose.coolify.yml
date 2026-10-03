@@ -1,0 +1,60 @@
+---
+# Coolify deployment for THIS fork.
+#
+# The upstream docker-compose.yml pulls a prebuilt image, so local source
+# changes never get compiled. This file instead BUILDS the app from the
+# repository via ./Dockerfile, which is what we want while actively
+# developing this fork.
+#
+# Coolify setup:
+#   Build Pack            : Docker Compose
+#   Branch                : master
+#   Compose file location : ./docker-compose.coolify.yml
+#   Exposed port          : 3000
+#
+# Required environment variables (set them in Coolify, never commit them):
+#   DATABASE_URL               - points at the bundled db service, user/db "umami", host "db", port 5432
+#   POSTGRES_PASSWORD          - must match the password inside DATABASE_URL
+#   APP_SECRET                 - random secret for session/cookie signing
+#   TWO_FACTOR_ENCRYPTION_KEY  - 64 hex chars: openssl rand -hex 32
+#
+# Schema migrations run automatically at container start
+# (scripts/start-docker.sh -> scripts/check-db.js -> prisma migrate deploy).
+services:
+  umami:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    expose:
+      - '3000'
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      APP_SECRET: ${APP_SECRET}
+      TWO_FACTOR_ENCRYPTION_KEY: ${TWO_FACTOR_ENCRYPTION_KEY}
+    depends_on:
+      db:
+        condition: service_healthy
+    init: true
+    restart: always
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost:3000/api/heartbeat']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: umami
+      POSTGRES_USER: umami
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - umami-db-data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+volumes:
+  umami-db-data:
