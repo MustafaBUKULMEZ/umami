@@ -7,7 +7,7 @@ export function generateTotpSecret(): string {
 
 export function generateOtpAuthUri(secret: string, username: string): string {
   return generateURI({
-    issuer: 'Umami',
+    issuer: 'Do Analytics',
     label: username,
     secret,
   });
