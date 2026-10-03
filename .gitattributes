@@ -1,0 +1,5 @@
+# Shell scripts must keep LF endings: they are executed inside Linux containers
+# (scripts/start-docker.sh is the Docker CMD), and CRLF makes Alpine's /bin/sh
+# fail with "set: illegal option -". Without this, core.autocrlf=true on Windows
+# checkouts silently breaks the image.
+*.sh text eol=lf
