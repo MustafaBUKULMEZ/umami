@@ -25,7 +25,7 @@ import type { HeatmapMode, HeatmapPoint, HeatmapResult, HeatmapSnapshot } from '
 import styles from './Heatmap.module.css';
 
 const SCROLL_BUCKET_SIZE = 10;
-const SCREEN_WIDTH_BUCKETS = [320, 375, 425, 768, 1024, 1440, 1920] as const;
+const SCREEN_WIDTH_BUCKETS = [320, 375, 425, 768, 1024, 1440, 1920, 2560] as const;
 
 interface ScreenWidthBucket {
   width: number;
