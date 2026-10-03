@@ -28,6 +28,11 @@ services:
     expose:
       - '3000'
     environment:
+      # Coolify magic variable: tells the Traefik proxy which service/port pair
+      # backs the configured domain. Without it a Compose-based deployment
+      # answers requests with "no available server", because the service only
+      # uses `expose` and never publishes a host port.
+      SERVICE_FQDN_UMAMI_3000: ${SERVICE_FQDN_UMAMI_3000:-}
       DATABASE_URL: ${DATABASE_URL}
       APP_SECRET: ${APP_SECRET}
       TWO_FACTOR_ENCRYPTION_KEY: ${TWO_FACTOR_ENCRYPTION_KEY}
